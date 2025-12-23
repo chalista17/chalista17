@@ -1,0 +1,619 @@
+{
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "fe7e28f44667"
+      },
+      "source": [
+        "## Setup\n"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 14,
+      "metadata": {
+        "id": "bd9529db1c0b",
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "outputId": "cda02373-634d-42f4-eda1-113af21f74f5"
+      },
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "installing cirq...\n",
+            "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m670.8/670.8 kB\u001b[0m \u001b[31m6.0 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\n",
+            "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m2.0/2.0 MB\u001b[0m \u001b[31m33.1 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\n",
+            "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m2.8/2.8 MB\u001b[0m \u001b[31m27.5 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\n",
+            "\u001b[?25hinstalled cirq.\n"
+          ]
+        }
+      ],
+      "source": [
+        "try:\n",
+        "    import cirq\n",
+        "    import cirq_google\n",
+        "except ImportError:\n",
+        "    print(\"installing cirq...\")\n",
+        "    !pip install --quiet cirq-google\n",
+        "    print(\"installed cirq.\")\n",
+        "    import cirq\n",
+        "    import cirq_google"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "iBW4Iix64cFn"
+      },
+      "source": [
+        "## Make a copy of this template\n",
+        "\n",
+        "You will need to have access to Quantum Computing Service before running this colab.\n",
+        "\n",
+        "This notebook can serve as a starter kit for you to run programs on Google's quantum hardware.  You can download it using the directions below, open it in colab (or Jupyter), and modify it to begin your experiments."
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "data_karyawan = {}"
+      ],
+      "metadata": {
+        "id": "xXiw-8H-MmkA"
+      },
+      "execution_count": 15,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "def Tambah_Data():\n",
+        "    nm = input(\"Nama\\t\\t: \")\n",
+        "    us = int(input(\"Usia\\t\\t: \"))\n",
+        "    jbt = input(\"Jabatan\\t\\t: \")\n",
+        "    dep = input(\"Departement\\t: \")\n",
+        "\n",
+        "    id = len(data_karyawan) + 1\n",
+        "\n",
+        "    data_karyawan[id] = {\n",
+        "        'nama': nm,\n",
+        "        'usia': us,\n",
+        "        'jabatan': jbt,\n",
+        "        'departement': dep\n",
+        "    }\n",
+        "    print(f\"\\nData karyawan {nm} sudah ditambahkan dengan ID: {id}\")"
+      ],
+      "metadata": {
+        "id": "Fa1fRQL8PkHd"
+      },
+      "execution_count": 16,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "6q5lpwgW5TrE"
+      },
+      "source": [
+        "## How to download iPython notebooks from GitHub\n",
+        "\n",
+        "You can retrieve iPython notebooks in the Cirq repository by\n",
+        "going to the [docs/ directory](https://github.com/quantumlib/Cirq/tree/main/docs).  For instance, this Colab template is found [here](https://github.com/quantumlib/Cirq/blob/main/docs/tutorials/google/colab.ipynb). Select the file that you would like to download and then click the *Raw* button in the upper-right part of the window:\n",
+        "\n",
+        "<img src=\"https://raw.githubusercontent.com/quantumlib/Cirq/main/docs/images/colab_github.png\" alt=\"GitHub UI button to view raw file\">\n",
+        "\n",
+        "This will show the entire file contents.  Right-click and select *Save as* to save this file to your computer.  Make sure to save to a file with a `.ipynb` extension (you may need to select *All files* from the format dropdown instead of *text*). You can also get to this Colab's [raw content directly](https://raw.githubusercontent.com/quantumlib/Cirq/main/docs/tutorials/google/colab.ipynb)\n",
+        "\n",
+        "You can also retrieve the entire Cirq repository by running the following command in a terminal that has `git` installed:\n",
+        "\n",
+        "```\n",
+        "git clone https://github.com/quantumlib/Cirq.git\n",
+        "```"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "czt1fSEHooF9"
+      },
+      "source": [
+        "## How to open Google Colab\n",
+        "\n",
+        "You can open a new Colab notebook from your Google Drive window or by visiting the [Colab site](https://colab.research.google.com/notebooks/intro.ipynb).  From the Colaboratory site, you can use the menu to upload an iPython notebook:\n",
+        "\n",
+        "<img src=\"https://raw.githubusercontent.com/quantumlib/Cirq/main/docs/images/colab_upload.png\" alt=\"Google Colab's upload notebook entry in File menu.\">\n",
+        "\n",
+        "This will upload the ipynb file that you downloaded before.  You can now run all the commands, modify it to suit your goals, and share it with others.\n",
+        "\n",
+        "### More Documentation Links\n",
+        "\n",
+        "* [Quantum Engine concepts](../../google/concepts.ipynb)\n",
+        "* [Quantum Engine documentation](../../google/engine.md)\n",
+        "* [Cirq documentation](https://quantumai.google/cirq)\n",
+        "* [Colab documentation](https://colab.research.google.com/notebooks/welcome.ipynb)\n"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "Bip6ZAIQ6min"
+      },
+      "source": [
+        "## Authenticate with Quantum Computing Service and install Cirq\n",
+        "\n",
+        "For details of authentication and installation, please see [Get started with Quantum Computing Service](start.ipynb).\n",
+        "\n",
+        "Note:  The below code will install the latest stable release of Cirq.  If you need the latest and greatest features and don't mind if a few things aren't quite working correctly, you can install the pre-release version of `cirq` using `pip install --upgrade cirq~=1.0.dev` instead of `pip install cirq` to get the most up-to-date features of Cirq.\n",
+        "\n",
+        "1. Enter the Cloud project ID you'd like to use in the `project_id` field.\n",
+        "2. Then run the cell below (and go through the auth flow for access to the project id you entered).\n",
+        "\n",
+        "<img src=\"https://raw.githubusercontent.com/quantumlib/Cirq/main/docs/images/run-code-block.png\" alt=\"Quantum Engine console\">"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 17,
+      "metadata": {
+        "id": "wfHdoHW67EGh",
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "outputId": "57505ef6-0136-4364-e1fa-d1b1799caacb"
+      },
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Available processors: ['rainbow', 'weber', 'willow_pink']\n",
+            "Using processor: rainbow\n"
+          ]
+        }
+      ],
+      "source": [
+        "# The Google Cloud Project id to use.\n",
+        "project_id = ''  # @param {type:\"string\"}\n",
+        "processor_id = \"\"  # @param {type:\"string\"}\n",
+        "\n",
+        "from cirq_google.engine.qcs_notebook import get_qcs_objects_for_notebook\n",
+        "\n",
+        "# For real engine instances, delete 'virtual=True' below.\n",
+        "qcs_objects = get_qcs_objects_for_notebook(project_id, processor_id, virtual=True)\n",
+        "engine = qcs_objects.engine\n",
+        "processor_id = qcs_objects.processor_id"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "5mwzenpB8FYi"
+      },
+      "source": [
+        "## Create an Engine variable\n",
+        "\n",
+        "The following creates an engine variable which can be used to run programs under the project ID you entered above."
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 18,
+      "metadata": {
+        "id": "HCb_9m_o8KEK",
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "outputId": "692f4ce0-cdfc-4d4c-b3ec-9b1d1964633a"
+      },
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Successful authentication using project !\n",
+            "Available Processors: \n",
+            "[<cirq_google.engine.simulated_local_processor.SimulatedLocalProcessor object at 0x78139bfba330>, <cirq_google.engine.simulated_local_processor.SimulatedLocalProcessor object at 0x78139bf783b0>, <cirq_google.engine.simulated_local_processor.SimulatedLocalProcessor object at 0x78139bc94140>]\n",
+            "Using processor: rainbow\n"
+          ]
+        }
+      ],
+      "source": [
+        "from google.auth.exceptions import DefaultCredentialsError\n",
+        "from google.api_core.exceptions import PermissionDenied\n",
+        "\n",
+        "# Create an Engine object to use, providing the project id and the args\n",
+        "try:\n",
+        "    if qcs_objects.signed_in:  # This line only needed for colab testing.\n",
+        "        engine = cirq_google.get_engine()\n",
+        "    print(f\"Successful authentication using project {project_id}!\")\n",
+        "    print('Available Processors: ')\n",
+        "    print(engine.list_processors())\n",
+        "    print(f'Using processor: {processor_id}')\n",
+        "    processor = engine.get_processor(processor_id)\n",
+        "except DefaultCredentialsError as err:\n",
+        "    print(\"Could not authenticate to Google Quantum Computing Service.\")\n",
+        "    print(\" Tips: If you are using Colab: make sure the previous cell was executed successfully.\")\n",
+        "    print(\n",
+        "        \"       If this notebook is not in Colab (e.g. Jupyter notebook), make sure gcloud is installed and `gcloud auth application-default login` was executed.\"\n",
+        "    )\n",
+        "    print()\n",
+        "    print(\"Error message:\")\n",
+        "    print(err)\n",
+        "except PermissionDenied as err:\n",
+        "    print(\n",
+        "        f\"While you are authenticated to Google Cloud it seems the project '{project_id}' does not exist or does not have the Quantum Engine API enabled.\"\n",
+        "    )\n",
+        "    print(\"Error message:\")\n",
+        "    print(err)"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "XEG4t_2b8dYx"
+      },
+      "source": [
+        "## Example"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 19,
+      "metadata": {
+        "id": "xujtwGxt8fOA",
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "outputId": "f37d1970-2f93-442a-ef4d-3f4e11112880"
+      },
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Success!  Results:\n",
+            "0110101000000110001101110111110101100110001110000101010000001000001110110111111101101000111011111000000110011011011101010101011110011011001100010111010001110101101111010110100110101100111010001101001110101100101100100010010101100110111001010011000110100101101001100000011111100000110001011101100110100011100011000100100001100101010110011111011111110011011100101111100011110111110111000011110100000011000101110011010010000100100110001111000110000001111011001111111001010011111001001101111011100101110001110101001010111100101001000011100010100001101101100101000011100111110110010100101110100001110100010100001110010110001010111110010100111110101101011000000011111001000100001111100011111101100001000110000111010100111101110001101110011110000100000001010111110010011101101101101101111110010111101001110111100111011011001011101011101111110011011001111000101100101011000001000111111000111110101000110100010001000000110111101100000010100010100100110101111011010001111010001100010011011000101111011101001111\n"
+          ]
+        }
+      ],
+      "source": [
+        "# A simple example.\n",
+        "q = cirq.GridQubit(5, 2)\n",
+        "circuit = cirq.Circuit(cirq.X(q) ** 0.5, cirq.measure(q, key='m'))\n",
+        "\n",
+        "job = processor.run_sweep(program=circuit, repetitions=1000)\n",
+        "\n",
+        "results = [str(int(b)) for b in job.results()[0].measurements['m'][:, 0]]\n",
+        "print('Success!  Results:')\n",
+        "print(''.join(results))"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "data_karyawan = {}\n",
+        "\n",
+        "def Tambah_Data():\n",
+        "    nm = input(\"Nama\\t\\t: \")\n",
+        "    us = int(input(\"Usia\\t\\t: \"))\n",
+        "    jbt = input(\"Jabatan\\t\\t: \")\n",
+        "    dep = input(\"Departement\\t: \")\n",
+        "\n",
+        "    id = len(data_karyawan) + 1\n",
+        "\n",
+        "    data_karyawan[id] = {\n",
+        "        'nama': nm,\n",
+        "        'usia': us,\n",
+        "        'jabatan': jbt,\n",
+        "        'departement': dep\n",
+        "    }\n",
+        "    print(f\"\\nData karyawan {nm} sudah ditambahkan dengan ID: {id}\")\n",
+        "\n",
+        "print(data_karyawan)\n",
+        "def Hapus_Data(id):\n",
+        "    if id in data_karyawan:\n",
+        "        del data_karyawan[id]\n",
+        "        print(f\"Karyawan dengan ID {id} sudah dihapus.\")\n",
+        "    else:\n",
+        "        print(f\"Data karyawan dengan ID {id} tidak ditemukan.\")\n",
+        "def Info_Karyawan(id):\n",
+        "    karyawan = data_karyawan.get(id)\n",
+        "    if karyawan:\n",
+        "        print(f\"ID Karyawan: {id}\")\n",
+        "        print(f\"Name: {karyawan['nama']}\")\n",
+        "        print(f\"Usia: {karyawan['usia']}\")\n",
+        "        print(f\"Jabatan: {karyawan['jabatan']}\")\n",
+        "    else:\n",
+        "        print(f\"Data karyawan dengan ID {id} tidak ditemukan.\")\n",
+        "def Tampilkan_Data():\n",
+        "    print(\"Data Karyawan:\")\n",
+        "    for id, nama in data_karyawan.items():\n",
+        "        print(f\"ID: {id}, Data: {data_karyawan[id]}\")"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "QU4mwxU6QGCu",
+        "outputId": "77dc9c3d-99b8-4369-f507-83eeb7fad9e1"
+      },
+      "execution_count": 21,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "{}\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "Tambah_Data()"
+      ],
+      "metadata": {
+        "id": "jBQX2qnGTNs-",
+        "outputId": "d5dd8eb1-f346-4a07-ef85-6445342002e0",
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        }
+      },
+      "execution_count": 22,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Nama\t\t: kirani\n",
+            "Usia\t\t: 20\n",
+            "Jabatan\t\t: staf\n",
+            "Departement\t: marketing\n",
+            "\n",
+            "Data karyawan kirani sudah ditambahkan dengan ID: 1\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "Tambah_Data()"
+      ],
+      "metadata": {
+        "id": "hp1iquLwTkSl",
+        "outputId": "2066e237-bdd0-4b46-eeb8-f56743a5d894",
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        }
+      },
+      "execution_count": 23,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Nama\t\t: wahyu\n",
+            "Usia\t\t: 23\n",
+            "Jabatan\t\t: staf\n",
+            "Departement\t: administrasi\n",
+            "\n",
+            "Data karyawan wahyu sudah ditambahkan dengan ID: 2\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "Hapus_Data(2)"
+      ],
+      "metadata": {
+        "id": "IJLo1SrKUUB5",
+        "outputId": "583d3a52-415c-404e-daa4-0fecce604cb0",
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        }
+      },
+      "execution_count": 28,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Karyawan dengan ID 2 sudah dihapus.\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "Tampilkan_Data()"
+      ],
+      "metadata": {
+        "id": "2yxFw6yyUbQg",
+        "outputId": "97d9fbf3-041f-43bc-d28e-d7c3c63bea9a",
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        }
+      },
+      "execution_count": 29,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Data Karyawan:\n",
+            "ID: 1, Data: {'nama': 'kirani', 'usia': 20, 'jabatan': 'staf', 'departement': 'marketing'}\n",
+            "ID: 3, Data: {'nama': 'dhea', 'usia': 20, 'jabatan': 'staf', 'departement': 'marketing'}\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "Info_Karyawan(3)"
+      ],
+      "metadata": {
+        "id": "zQ_R9CeEVEyw",
+        "outputId": "2d81b337-2790-45cf-b4a0-94f833676cab",
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        }
+      },
+      "execution_count": 30,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "ID Karyawan: 3\n",
+            "Name: dhea\n",
+            "Usia: 20\n",
+            "Jabatan: staf\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "def Update_Data():\n",
+        "    id = int(input(\"Masukkan ID karyawan yang ingin diupdate: \"))\n",
+        "\n",
+        "    if id in data_karyawan:\n",
+        "        print(\"\\nData lama:\")\n",
+        "        print(data_karyawan[id])\n",
+        "\n",
+        "        print(\"\\nMasukkan data baru (kosongkan jika tidak ingin diubah)\")\n",
+        "\n",
+        "        nm = input(\"Nama baru\\t\\t: \")\n",
+        "        us = input(\"Usia baru\\t\\t: \")\n",
+        "        jbt = input(\"Jabatan baru\\t\\t: \")\n",
+        "        dep = input(\"Departement baru\\t: \")\n",
+        "\n",
+        "        if nm:\n",
+        "            data_karyawan[id]['nama'] = nm\n",
+        "        if us:\n",
+        "            data_karyawan[id]['usia'] = int(us)\n",
+        "        if jbt:\n",
+        "            data_karyawan[id]['jabatan'] = jbt\n",
+        "        if dep:\n",
+        "            data_karyawan[id]['departement'] = dep\n",
+        "\n",
+        "        print(\"\\nData karyawan berhasil diperbarui.\\n\")\n",
+        "    else:\n",
+        "        print(\"Data karyawan dengan ID tersebut tidak ditemukan.\\n\")"
+      ],
+      "metadata": {
+        "id": "a-gUjjZqVp9m"
+      },
+      "execution_count": 32,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "Update_Data()"
+      ],
+      "metadata": {
+        "id": "46oPjVxnVtVi",
+        "outputId": "f748aacf-d52d-4ff4-8606-75beaadbcb1d",
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        }
+      },
+      "execution_count": 33,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Masukkan ID karyawan yang ingin diupdate: 1\n",
+            "\n",
+            "Data lama:\n",
+            "{'nama': 'kirani', 'usia': 20, 'jabatan': 'staf', 'departement': 'marketing'}\n",
+            "\n",
+            "Masukkan data baru (kosongkan jika tidak ingin diubah)\n",
+            "Nama baru\t\t: Chalista\n",
+            "Usia baru\t\t: 21\n",
+            "Jabatan baru\t\t: Admin\n",
+            "Departement baru\t: keuangan\n",
+            "\n",
+            "Data karyawan berhasil diperbarui.\n",
+            "\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "while(True):\n",
+        "  print(\"\\n --- Data Karyawan ---\")\n",
+        "  print(\"1. Lihat Data\")\n",
+        "  print(\"2. Tambah Data\")\n",
+        "  print(\"3. Ubah Data\")\n",
+        "  print(\"4. Hapus\")\n",
+        "  print(\"5. Selesai\")\n",
+        "  pilih = input(\"Pilih Menu (1-5)\")\n",
+        "\n",
+        "  if(pilih == '1'):\n",
+        "    Tampilkan_Data()\n",
+        "  elif(pilih == '2'):\n",
+        "    Tambah_Data()\n",
+        "  elif(pilih == '3'):\n",
+        "    Update_Data()\n",
+        "  elif(pilih == '4'):\n",
+        "    Hapus_Data()\n",
+        "  elif(pilih == '5'):\n",
+        "    print(\"Terimakasih\")\n",
+        "  break"
+      ],
+      "metadata": {
+        "id": "rFfBDPykWjM_",
+        "outputId": "7f2cdd7a-e8fd-4e58-ee37-6068e50c0591",
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        }
+      },
+      "execution_count": 36,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "\n",
+            " --- Data Karyawan ---\n",
+            "1. Lihat Data\n",
+            "2. Tambah Data\n",
+            "3. Ubah Data\n",
+            "4. Hapus\n",
+            "5. Selesai\n",
+            "Pilih Menu (1-5)5\n",
+            "Terimakasih\n"
+          ]
+        }
+      ]
+    }
+  ],
+  "metadata": {
+    "colab": {
+      "name": "colab.ipynb",
+      "provenance": []
+    },
+    "kernelspec": {
+      "display_name": "Python 3",
+      "name": "python3"
+    }
+  },
+  "nbformat": 4,
+  "nbformat_minor": 0
+}
